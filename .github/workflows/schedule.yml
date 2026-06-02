@@ -1,0 +1,31 @@
+name: NewsPusher 定时推送
+
+on:
+  schedule:
+    # 每3小时执行一次（UTC时间，约北京时间8/11/14/17/20/23/2/5点）
+    - cron: "0 */3 * * *"
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 抓取并推送
+        env:
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SMTP_AUTH_CODE: ${{ secrets.SMTP_AUTH_CODE }}
+          RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+          PUSH_INTERVAL_HOURS: ${{ secrets.PUSH_INTERVAL_HOURS }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_API_URL: ${{ secrets.AI_API_URL }}
+          AI_MODEL: ${{ secrets.AI_MODEL }}
+        run: python main.py
