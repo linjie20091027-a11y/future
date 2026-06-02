@@ -1,0 +1,6 @@
+.env
+sent_cache.json
+__pycache__/
+*.pyc
+news_pusher.log
+test_*.py
