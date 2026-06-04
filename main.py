@@ -316,74 +316,74 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body {{
+  body {
     margin: 0; padding: 16px; background: #f0f2f5;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
                  "Microsoft YaHei", "Helvetica Neue", sans-serif;
-  }}
-  .container {{ max-width: 640px; margin: 0 auto; }}
+  }
+  .container { max-width: 640px; margin: 0 auto; }
   /* ── 顶部 ── */
-  .top {{
+  .top {
     background: #fff; border-radius: 8px; padding: 18px 20px 12px;
     margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.04);
-  }}
-  .top h1 {{ margin: 0; font-size: 20px; color: #1a1a2e; }}
-  .top .sub {{ font-size: 12px; color: #999; margin-top: 2px; }}
+  }
+  .top h1 { margin: 0; font-size: 20px; color: #1a1a2e; }
+  .top .sub { font-size: 12px; color: #999; margin-top: 2px; }
   /* ── 目录标签 ── */
-  .nav {{ display: flex; gap: 8px; margin-top: 10px; }}
-  .nav a {{
+  .nav { display: flex; gap: 8px; margin-top: 10px; }
+  .nav a {
     text-decoration: none; font-size: 12px; padding: 4px 14px;
     border-radius: 14px; color: #fff; font-weight: 600;
-  }}
-  .nav .n-github {{ background: #24292f; }}
-  .nav .n-tech {{ background: #3b82f6; }}
-  .nav .n-finance {{ background: #f59e0b; }}
+  }
+  .nav .n-github { background: #24292f; }
+  .nav .n-tech { background: #3b82f6; }
+  .nav .n-finance { background: #f59e0b; }
   /* ── 板块卡片 ── */
-  .card {{
+  .card {
     background: #fff; border-radius: 8px; padding: 14px 18px;
     margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.04);
-  }}
-  .card-head {{
+  }
+  .card-head {
     display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
-  }}
-  .card-head .dot {{
+  }
+  .card-head .dot {
     width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-  }}
-  .card-head .dot.github {{ background: #24292f; }}
-  .card-head .dot.tech {{ background: #3b82f6; }}
-  .card-head .dot.finance {{ background: #f59e0b; }}
-  .card-head h2 {{ margin: 0; font-size: 15px; color: #1a1a2e; }}
-  .card-head .count {{
+  }
+  .card-head .dot.github { background: #24292f; }
+  .card-head .dot.tech { background: #3b82f6; }
+  .card-head .dot.finance { background: #f59e0b; }
+  .card-head h2 { margin: 0; font-size: 15px; color: #1a1a2e; }
+  .card-head .count {
     font-size: 12px; color: #999; font-weight: 400;
-  }}
+  }
   /* ── 条目 ── */
-  .item {{
+  .item {
     padding: 8px 0; border-bottom: 1px solid #f0f0f0;
-  }}
-  .item:last-child {{ border-bottom: none; }}
-  .item .row {{
+  }
+  .item:last-child { border-bottom: none; }
+  .item .row {
     display: flex; align-items: baseline; gap: 6px;
-  }}
-  .item a {{
+  }
+  .item a {
     font-size: 14px; font-weight: 600; color: #1a1a2e;
     text-decoration: none; flex: 1; line-height: 1.4;
-  }}
-  .item a:hover {{ color: #3b82f6; text-decoration: underline; }}
-  .item .tag {{
+  }
+  .item a:hover { color: #3b82f6; text-decoration: underline; }
+  .item .tag {
     font-size: 10px; padding: 1px 6px; border-radius: 3px;
     color: #fff; white-space: nowrap; flex-shrink: 0;
-  }}
-  .item .tag.github-src {{ background: #57606a; }}
-  .item .tag.tech-src {{ background: #3b82f6; }}
-  .item .tag.finance-src {{ background: #f59e0b; }}
-  .item .desc {{
+  }
+  .item .tag.github-src { background: #57606a; }
+  .item .tag.tech-src { background: #3b82f6; }
+  .item .tag.finance-src { background: #f59e0b; }
+  .item .desc {
     font-size: 12px; color: #888; margin-top: 2px; line-height: 1.4;
-  }}
-  .empty {{ text-align: center; color: #bbb; padding: 16px; font-size: 13px; }}
+  }
+  .empty { text-align: center; color: #bbb; padding: 16px; font-size: 13px; }
   /* ── 底部 ── */
-  .foot {{
+  .foot {
     text-align: center; font-size: 11px; color: #bbb; padding: 12px;
-  }}
+  }
 </style>
 </head>
 <body>
@@ -457,11 +457,9 @@ def build_html(
     ]
     content = "\n".join(sections)
 
-    return HTML_TEMPLATE.format(
-        date_str=date_str,
-        next_push=next_push,
-        content=content,
-    )
+    return HTML_TEMPLATE.replace("{date_str}", date_str).replace(
+        "{next_push}", next_push
+    ).replace("{content}", content)
 
 
 # ─── 邮件发送 ───────────────────────────────────────────────
@@ -496,29 +494,32 @@ def send_email(html_content: str) -> bool:
 # ─── 主流程 ─────────────────────────────────────────────────
 
 def run_once():
-    logger.info("=" * 50)
-    logger.info("开始抓取新闻...")
-    articles = fetch_all_news()
-    logger.info("共抓取 %d 条（去重前）", len(articles))
+    try:
+        logger.info("=" * 50)
+        logger.info("开始抓取新闻...")
+        articles = fetch_all_news()
+        logger.info("共抓取 %d 条（去重前）", len(articles))
 
-    new_articles = deduplicate(articles)
-    logger.info("去重后 %d 条新内容", len(new_articles))
+        new_articles = deduplicate(articles)
+        logger.info("去重后 %d 条新内容", len(new_articles))
 
-    if not new_articles:
-        logger.info("无新内容，跳过发送")
-        return
+        if not new_articles:
+            logger.info("无新内容，跳过发送")
+            return
 
-    github_articles = [a for a in new_articles if classify_article(a) == "github"]
-    tech_articles = [a for a in new_articles if classify_article(a) == "tech"]
-    finance_articles = [a for a in new_articles if classify_article(a) == "finance"]
+        github_articles = [a for a in new_articles if classify_article(a) == "github"]
+        tech_articles = [a for a in new_articles if classify_article(a) == "tech"]
+        finance_articles = [a for a in new_articles if classify_article(a) == "finance"]
 
-    logger.info(
-        "GitHub: %d 条, 科技: %d 条, 金融: %d 条",
-        len(github_articles), len(tech_articles), len(finance_articles),
-    )
+        logger.info(
+            "GitHub: %d 条, 科技: %d 条, 金融: %d 条",
+            len(github_articles), len(tech_articles), len(finance_articles),
+        )
 
-    html = build_html(github_articles, tech_articles, finance_articles)
-    send_email(html)
+        html = build_html(github_articles, tech_articles, finance_articles)
+        send_email(html)
+    except Exception as e:
+        logger.error("运行异常: %s", e, exc_info=True)
 
 
 if __name__ == "__main__":

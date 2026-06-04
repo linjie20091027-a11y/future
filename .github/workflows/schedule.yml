@@ -2,9 +2,8 @@ name: NewsPusher 定时推送
 
 on:
   schedule:
-    # 每3小时执行一次（UTC时间，约北京时间8/11/14/17/20/23/2/5点）
     - cron: "0 */3 * * *"
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   push:
@@ -18,6 +17,18 @@ jobs:
 
       - name: 安装依赖
         run: pip install -r requirements.txt
+
+      - name: 检查配置
+        env:
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SMTP_AUTH_CODE: ${{ secrets.SMTP_AUTH_CODE }}
+        run: |
+          if [ -z "$SENDER_EMAIL" ] || [ -z "$SMTP_AUTH_CODE" ]; then
+            echo "::error::请先配置 GitHub Secrets: SENDER_EMAIL / SMTP_AUTH_CODE"
+            echo "::notice::设置入口: Settings → Secrets and variables → Actions → New repository secret"
+            exit 1
+          fi
+          echo "配置检查通过"
 
       - name: 抓取并推送
         env:
