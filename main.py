@@ -392,7 +392,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <!-- 顶部 -->
 <div class="top">
   <h1>科技 & 金融 · 每日速递</h1>
-  <div class="sub">{date_str} · 下次推送 {next_push} 后</div>
+  <div class="sub">{date_str} · 下次推送 {next_push}</div>
   <div class="nav">
     <a href="#github" class="n-github">GitHub 前沿</a>
     <a href="#tech" class="n-tech">国内科技</a>
@@ -408,6 +408,15 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 </html>"""
 
 
+def next_push_label() -> str:
+    now = datetime.now()
+    for h, m in [(12, 0), (20, 0)]:
+        target = now.replace(hour=h, minute=m, second=0, microsecond=0)
+        if target > now:
+            return target.strftime("%H:%M")
+    return "明天 12:00"
+
+
 def build_html(
     github_articles: list[dict],
     tech_articles: list[dict],
@@ -415,7 +424,7 @@ def build_html(
 ) -> str:
     now = datetime.now()
     date_str = now.strftime("%Y年%m月%d日 %H:%M")
-    next_push = f"{PUSH_INTERVAL_HOURS} 小时"
+    next_push = next_push_label()
 
     def render_section(anchor, label, css_class, src_class, articles):
         if not articles:
